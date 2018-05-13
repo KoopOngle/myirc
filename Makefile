@@ -21,15 +21,14 @@ NAME2		=		client
 SRCDIR		=		source
 
 SRCS1		=		$(addprefix $(SRCDIR)/,	\
-				create.c		\
-				live.c			\
-				main.c)
+				mainserver.c)
 
 SRCS2		=		$(addprefix $(SRCDIR)/,	\
+				mainclient.c)
 
 OBJDIR		=		build
 
-OBJS		=		$(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o,  $(SRCS))
+OBJS		=		$(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o,  $(SRCS1))
 OBJS2		=		$(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o,  $(SRCS2))
 
 all:		$(NAME)
