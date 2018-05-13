@@ -65,11 +65,11 @@ int accept_func(int fd)
 							connections. */
 							break;
 						}
-					}
-					else
-					{
-						perror ("accept");
-						break;
+						else
+						{
+							perror ("accept");
+							break;
+						}
 					}
 					test = getnameinfo (&in_addr, in_len,
 							hbuf, sizeof(hbuf),
@@ -188,11 +188,9 @@ int main(int argc, char **argv)
 	int port;
 	int fd;
 
-	if (argc != 3)
+	if (argc != 2)
 		return(1);
 	port = atoi(argv[1]);
-	if (chdir(argv[2]) == -1)
-		return(1);
 	fd = init_all(port);
 	if (close(fd) == -1)
 		return (1);
