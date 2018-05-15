@@ -22,6 +22,8 @@ int testError( struct epoll_event *events, int i)
 
 int accept_func(int fd)
 {
+	int *array_fd = calloc(MAXEVENTS, sizeof(int));
+	int nb_fd = 0;
 	int efd, test, i, n;
 	struct epoll_event event;
  	struct epoll_event *events;
@@ -33,7 +35,7 @@ int accept_func(int fd)
 		exit(84);
 	}
 	event.data.fd = fd;
-	event.events = EPOLLIN | EPOLLET;
+	event.events = EPOLLIN;
 	test = epoll_ctl(efd, EPOLL_CTL_ADD, fd, &event);
 	if (test == -1){
 		perror("epoll_ctl");
@@ -44,77 +46,81 @@ int accept_func(int fd)
 
 	while (2727) {
 		n = epoll_wait (efd, events, MAXEVENTS, -1);
+		printf("n:[%d]\n", n);
 		for (i = 0; i < n; i++) {
 			if (testError(events, i))
 				continue;
-			else if (events[i].data.fd == fd) {
+			if (events[i].data.fd == fd) {
 				// là ça veut dire qu'il y a une nouvelle connection
-				while (1) {
-					struct sockaddr in_addr;
-					socklen_t in_len = sizeof(in_addr);
-					int infd;
-					char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
+				struct sockaddr in_addr;
+				socklen_t in_len = sizeof(in_addr);
+				int infd;
+				char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV];
 
-					infd = accept(fd, &in_addr, &in_len);
-					if (infd == -1)
+				infd = accept(fd, &in_addr, &in_len);
+				if (infd == -1)
+				{
+					if ((errno == EAGAIN) ||
+					(errno == EWOULDBLOCK))
 					{
-						if ((errno == EAGAIN) ||
-						(errno == EWOULDBLOCK))
-						{
-							/* We have processed all incoming
-							connections. */
-							break;
-						}
-						else
-						{
-							perror ("accept");
-							break;
-						}
+						/* We have processed all incoming
+						connections. */
+						break;
 					}
-					test = getnameinfo (&in_addr, in_len,
-							hbuf, sizeof(hbuf),
-							sbuf, sizeof (sbuf),
-							NI_NUMERICHOST | NI_NUMERICSERV);
-					if (test == 0)
+					else
 					{
-						printf("Accepted connection on descriptor %d "
-						"(host=%s, port=%s)\n", infd, hbuf, sbuf);
-					}
-					event.data.fd = infd;
-					event.events = EPOLLIN | EPOLLET;
-					test = epoll_ctl (efd, EPOLL_CTL_ADD, infd, &event);
-					if (test == -1)
-					{
-						perror ("epoll_ctl");
-						exit (84);
+						perror ("accept");
+						break;
 					}
 				}
-				continue;
+				test = getnameinfo (&in_addr, in_len,
+						hbuf, sizeof(hbuf),
+						sbuf, sizeof (sbuf),
+						NI_NUMERICHOST | NI_NUMERICSERV);
+				if (test == 0)
+				{
+					printf("Accepted connection on descriptor %d "
+					"(host=%s, port=%s)\n", infd, hbuf, sbuf);
+					array_fd[nb_fd] = infd;
+					nb_fd++;
+				}
+				struct epoll_event ev;
+				ev.data.fd = infd;
+				ev.events = EPOLLIN;
+				test = epoll_ctl (efd, EPOLL_CTL_ADD, infd, &ev);
+				if (test == -1)
+				{
+					perror ("epoll_ctl");
+					exit (84);
+				}
 			}
 			else {
 				//Là c'est quand on a des data a récup dans le fd
+				//printf("Bonjour %d\n", events[i].data.fd);
 				int done = 0;
-
-				while (9393) {
 					//Ici ça va être la fonction read mamene
-					ssize_t count;
-					char buf[512];
+				ssize_t count;
+				char buf[512];
 
-					count = read(events[i].data.fd, buf, sizeof(buf));
-					if (count == -1) {
-						if (errno != EAGAIN) // en gros si c'est égale a ça c'ets que ça a fini de read
-							{
-								perror ("read");
-								done = 1;
-							}
-						break;
-					}
-					else if (count == 0) {
-						//fin du file donc close connection
-						done = 1;
-						break;
-					}
-					test = write(1, buf, count);
+				count = read(events[i].data.fd, buf, sizeof(buf));
+				if (count == -1) {
+					if (errno != EAGAIN) // en gros si c'est égale a ça c'ets que ça a fini de read
+						{
+							perror ("read");
+							done = 1;
+						}
+					break;
+				}
+				else if (count == 0) {
+					//fin du file donc close connection
+					done = 1;
+					break;
+				}
+				printf("fd : [%d] dit : %s", events[i].data.fd, buf);
+				for (int a = 0; a < nb_fd; a++) {
+					if (array_fd[a] == events[i].data.fd)
+						continue;
+					test = write(array_fd[a], buf, count);
 					if (test == -1) {
 						perror("write");
 						exit(84);
