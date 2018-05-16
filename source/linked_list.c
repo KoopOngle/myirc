@@ -41,6 +41,8 @@ t_list *suppress_from_list(t_list *fd_list)
 {
     t_list *newfd;
 
+    if (fd_list == NULL)
+        return (NULL);
     if (fd_list->head == fd_list)
     {
         if (fd_list->next == fd_list)
