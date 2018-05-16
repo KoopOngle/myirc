@@ -21,7 +21,8 @@ NAME2		=		client
 SRCDIR		=		source
 
 SRCS1		=		$(addprefix $(SRCDIR)/,	\
-				mainserver.c)
+				mainserver.c		\
+				linked_list.c)
 
 SRCS2		=		$(addprefix $(SRCDIR)/,	\
 				mainclient.c)

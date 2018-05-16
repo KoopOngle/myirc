@@ -20,5 +20,5 @@
 #include <sys/epoll.h>
 #include <errno.h>
 
- #define MAXEVENTS 1024
+#define MAXEVENTS 1024
 #endif /* !SERVER_H_ */

@@ -20,7 +20,7 @@ int put_in_list(list_t **list, void *data)
 		while (tmp->next)
 			tmp = tmp->next;
 		tmp->next = element;
-	} else	
+	} else
 		*list = element;
 	return (0);
 }
