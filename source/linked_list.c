@@ -70,6 +70,8 @@ client_t *suppress_from_list(client_t *fd_list)
 client_t *add_to_list(client_t *fd_list, int fd)
 {
     client_t *newfd;
+    if (fd_list == NULL)
+        return (NULL);
     if (fd_list->fd == -1)
     {
         fd_list->fd = fd;
