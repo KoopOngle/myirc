@@ -14,6 +14,7 @@ typedef struct  s_list
     struct s_list       *next;
     struct s_list       *head;
     int     fd;
+    char   *nick;
 }               client_t;
 
 client_t *find_in_list(client_t *fd_list, int fd);

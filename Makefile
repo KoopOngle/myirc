@@ -22,7 +22,9 @@ SRCDIR		=		source
 
 SRCS1		=		$(addprefix $(SRCDIR)/,	\
 				mainserver.c		\
-				linked_list.c)
+				linked_list.c		\
+				parsing.c		\
+				handlers.c)
 
 SRCS2		=		$(addprefix $(SRCDIR)/,	\
 				mainclient.c)
