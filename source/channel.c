@@ -85,6 +85,7 @@ channel_t *add_tochannel_list(channel_t *channel_list, char *name)
 		newchannel->prev = channel_list;
 		newchannel->head = channel_list->head;
 		newchannel->next = newchannel->head;
+		newchannel->clients = initcli_chan();
 		if (channel_list->head->next == channel_list->head)
 			channel_list->head->next = newchannel;
 		channel_list->head->prev = newchannel;

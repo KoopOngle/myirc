@@ -27,9 +27,11 @@ int accept_func(int fd)
 	int efd, test, i, n;
 	struct epoll_event event;
  	struct epoll_event *events;
+	channel_t *chan_list = initchannel();
+
 	efd = epoll_create1(0);
-	if (efd == -1)
-	{
+	chan_list = add_tochannel_list(chan_list, "*");
+	if (efd == -1) {
 		perror("create");
 		close(fd);
 		exit(84);
@@ -51,10 +53,10 @@ int accept_func(int fd)
 			if (testError(events, i))
 				continue;
 			if (events[i].data.fd == fd) {
-				accept_client(efd, fd_list, fd);
+				accept_client(efd, fd_list, fd, chan_list);
 			}
 			else {
-				read_client(fd_list, events[i].data.fd, efd);
+				read_client(fd_list, events[i].data.fd, efd, chan_list);
 			}
 		}
 	}

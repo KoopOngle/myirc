@@ -25,13 +25,14 @@ Renvoyé quand le traitement d'un message NICK résulte en une tentative de chan
 
 #include "server.h"
 
-void nickhandler(client_t *client, int efd)
+void nickhandler(client_t *client, int efd, channel_t *chan)
 {
 	client_t *tmp = client->head;
 	char *name = strdup(cleanstr(strtok(NULL, " ")));
 	int start = 1;
 	int test = 0;
 
+	chan = chan;
 	efd = efd;
 	if (!name || name[0] == '\0')
 		write(client->fd, "431 No nickname given\r\n", 23);
@@ -62,26 +63,28 @@ void nickhandler(client_t *client, int efd)
 	printf("NICK handled %d\n", client->fd);
 }
 
-void userhandler(client_t *client, int efd)
+void userhandler(client_t *client, int efd, channel_t *chan)
 {
+	chan = chan;
 	efd = efd;
 	client->user = 1;
-	printf("USERRRRRRRRRrr\n");
 	if (client->nick != NULL)
 		write(client->fd, "001 Welcome\r\n", 13);
 }
 
-void passhandler(client_t *client, int efd)
+void passhandler(client_t *client, int efd, channel_t *chan)
 {
+	chan = chan;
 	efd = efd;
 	client->fd = client->fd;
 }
 
-void usershandler(client_t *client, int efd)
+void usershandler(client_t *client, int efd, channel_t *chan)
 {
 	client_t *tmp = client->head;
 	int start = 1;
 
+	chan = chan;
 	efd = efd;
 	write(client->fd, "Users list : \n", 14);
 	while (tmp && (tmp != client->head || start == 1)){
@@ -94,12 +97,13 @@ void usershandler(client_t *client, int efd)
 	}
 }
 
-void quithandler(client_t *client, int efd)
+void quithandler(client_t *client, int efd, channel_t *chan)
 {
 	printf("Closed connection on descriptor %d\n", client->fd);
 	epoll_ctl(efd, EPOLL_CTL_DEL, client->fd, NULL);
 	shutdown(client->fd, SHUT_RDWR);
 	close(client->fd);
+	suppress_client_from_chans(client, chan);
 	client = suppress_from_list(client);
 	//ecrire a tout le monde qu'il a quit
 }

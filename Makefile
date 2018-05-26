@@ -27,7 +27,8 @@ SRCS1		=		$(addprefix $(SRCDIR)/,	\
 				handlers.c		\
 				channel.c		\
 				client_channel.c	\
-				get_next_line.c)
+				get_next_line.c		\
+				handler_chan.c)
 
 SRCS2		=		$(addprefix $(SRCDIR)/,	\
 				mainclient.c)

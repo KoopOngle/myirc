@@ -24,7 +24,7 @@ char *cleanstr(char *str)
 	return(str);
 }
 
-void handle_command(char *str, client_t *client, int efd)
+void handle_command(char *str, client_t *client, int efd, channel_t *channel)
 {
 	char *firststr = cleanstr(strtok(str, " "));
 	int i = 0;
@@ -35,7 +35,7 @@ void handle_command(char *str, client_t *client, int efd)
 		i++;
 	if (i < NB_COM) {
 		if (handlers[i].handler)
-			handlers[i].handler(client, efd);
+			handlers[i].handler(client, efd, channel);
 		else
 			write(client->fd, "502 Can't handle this command.\r\n", 32);
 	} else {
@@ -44,13 +44,13 @@ void handle_command(char *str, client_t *client, int efd)
 	}
 }
 
-int read_client(client_t *client, int fd_event, int efd)
+int read_client(client_t *client, int fd_event, int efd, channel_t *channel)
 {
 	char *cmd = get_next_line(fd_event);
 	int i = 0;
 
 	if (cmd != NULL) {
-		handle_command(cmd, find_in_list(client, fd_event), efd);
+		handle_command(cmd, find_in_list(client, fd_event), efd, channel);
 	}
 	else {
 		printf("Closed connection on descriptor %d\n", fd_event);
@@ -63,7 +63,7 @@ int read_client(client_t *client, int fd_event, int efd)
 	return(0);
 }
 
-void accept_client(int efd, client_t *client, int fd)
+void accept_client(int efd, client_t *client, int fd, channel_t *chan)
 {
 	struct sockaddr in_addr;
 	socklen_t in_len = sizeof(in_addr);
@@ -78,6 +78,8 @@ void accept_client(int efd, client_t *client, int fd)
 	} else {
 		printf("Accepted connection on descriptor %d\n", infd);
 		client = add_to_list(client, infd);
+		chan = find_inchannel_list(chan, "*");
+		chan->clients = add_tocli_chan_list(chan->clients, client);
 	}
 	ev.data.fd = infd;
 	ev.events = EPOLLIN;
