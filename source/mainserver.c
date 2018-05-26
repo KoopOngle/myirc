@@ -54,7 +54,7 @@ int accept_func(int fd)
 				accept_client(efd, fd_list, fd);
 			}
 			else {
-				read_client(fd_list, events[i].data.fd);
+				read_client(fd_list, events[i].data.fd, efd);
 			}
 		}
 	}
@@ -65,7 +65,6 @@ int accept_func(int fd)
 
 int init_all(int port)
 {
-
 	struct protoent *pe;
 	int fd;
 	struct sockaddr_in s_in;

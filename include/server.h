@@ -21,24 +21,27 @@
 #include "linked_list.h"
 #include <errno.h>
 
+
+#define READ_SIZE 1
 #define NB_COM 10
 #define MAXEVENTS 1024
 
 typedef struct handle_s {
 	const char *string;
-	void (*handler)(client_t*);
+	void (*handler)(client_t*, int efd);
 	const char *help;
 } handle_t;
 
+char *get_next_line(const int fd);
 char *cleanstr(char *str);
-void handle_command(char *str, client_t *client);
-int read_client(client_t *client, int fd_event);
+void handle_command(char *str, client_t *client, int efd);
+int read_client(client_t *client, int fd_event, int efd);
 void accept_client(int efd, client_t *client, int fd);
-void usershandler(client_t *client);
-void userhandler(client_t *client);
-void quithandler(client_t *client);
-void passhandler(client_t *client);
-void nickhandler(client_t *client);
+void usershandler(client_t *client, int efd);
+void userhandler(client_t *client, int efd);
+void quithandler(client_t *client, int efd);
+void passhandler(client_t *client, int efd);
+void nickhandler(client_t *client, int efd);
 
 
 static const handle_t handlers[NB_COM] = {

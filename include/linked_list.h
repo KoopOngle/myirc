@@ -15,6 +15,7 @@ typedef struct  s_list
     struct s_list       *head;
     int     fd;
     char   *nick;
+    int     user;
 }               client_t;
 
 typedef struct  s_channel_client

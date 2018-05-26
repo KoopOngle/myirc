@@ -20,7 +20,7 @@ client_t *find_in_list(client_t *fd_list, int fd)
         while (fd_list != fd_list->head)
         {
                 if (fd_list->fd == fd)
-                    return (fd_list);
+                        return (fd_list);
                 fd_list = fd_list->next;
         }
         return (NULL);
@@ -84,8 +84,10 @@ client_t *add_to_list(client_t *fd_list, int fd)
                 newfd->prev = fd_list;
                 newfd->head = fd_list->head;
                 newfd->next = newfd->head;
+                newfd->user = 0;
+                newfd->nick = NULL;
                 if (fd_list->head->next == fd_list->head)
-                    fd_list->head->next = newfd;
+                        fd_list->head->next = newfd;
                 fd_list->head->prev = newfd;
                 fd_list->next = newfd;
         }

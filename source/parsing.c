@@ -24,7 +24,7 @@ char *cleanstr(char *str)
 	return(str);
 }
 
-void handle_command(char *str, client_t *client)
+void handle_command(char *str, client_t *client, int efd)
 {
 	char *firststr = cleanstr(strtok(str, " "));
 	int i = 0;
@@ -35,7 +35,7 @@ void handle_command(char *str, client_t *client)
 		i++;
 	if (i < NB_COM) {
 		if (handlers[i].handler)
-			handlers[i].handler(client);
+			handlers[i].handler(client, efd);
 		else
 			write(client->fd, "502 Can't handle this command.\r\n", 32);
 	} else {
@@ -44,31 +44,22 @@ void handle_command(char *str, client_t *client)
 	}
 }
 
-int read_client(client_t *client, int fd_event)
+int read_client(client_t *client, int fd_event, int efd)
 {
-	char *buf = malloc(sizeof(char) * 1000);
-	int size = read(fd_event, buf, 999);
-	int done = 0;
+	char *cmd = get_next_line(fd_event);
+	int i = 0;
 
-	if (size == -1)
-	{
-		if (errno != EAGAIN)
-		{
-			perror ("read");
-			done = 1;
-		}
+	if (cmd != NULL) {
+		handle_command(cmd, find_in_list(client, fd_event), efd);
 	}
-	else if (size == 0)
-		done = 1;
-	if (done == 1) {
-		printf ("Closed connection on descriptor %d\n", fd_event);
+	else {
+		printf("Closed connection on descriptor %d\n", fd_event);
 		client = suppress_from_list(find_in_list(client, fd_event));
-		close (fd_event);
+		close(fd_event);
 		return (1);
 	}
-	buf[size] = '\0';
-	handle_command(buf, find_in_list(client, fd_event));
-	free(buf);
+	printf("Return :%d\n", i);
+
 	return(0);
 }
 
@@ -81,18 +72,16 @@ void accept_client(int efd, client_t *client, int fd)
 	struct epoll_event ev;
 
 	infd = accept(fd, &in_addr, &in_len);
-	if (infd == -1)
-	{
+	if (infd == -1) {
 		perror ("accept");
 		return;
-	}
-	else {
+	} else {
 		printf("Accepted connection on descriptor %d\n", infd);
 		client = add_to_list(client, infd);
 	}
 	ev.data.fd = infd;
 	ev.events = EPOLLIN;
-	test = epoll_ctl (efd, EPOLL_CTL_ADD, infd, &ev);
+	test = epoll_ctl(efd, EPOLL_CTL_ADD, infd, &ev);
 	if (test == -1)
 	{
 		perror ("epoll_ctl");
