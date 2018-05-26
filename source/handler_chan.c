@@ -11,14 +11,16 @@
 void joinhandler(client_t *client, int efd, channel_t *chan)
 {
 	char *name = strdup(cleanstr(strtok(NULL, " ")));
+	channel_t *tmp = find_inchannel_list(chan, name);
 
 	efd = efd;
-	chan = find_inchannel_list(chan, name);
-	if (chan == NULL) {
+	printf("%s\n", name);
+	if (tmp == NULL) {
 		chan = add_tochannel_list(chan, name);
 		chan = find_inchannel_list(chan, name);
-	}
-	chan->clients = add_tocli_chan_list(chan->clients, client);
+		chan->clients = add_tocli_chan_list(chan->clients, client);
+	} else
+		chan->clients = add_tocli_chan_list(tmp->clients, client);
 }
 
 void privmsghandler(client_t *client, int efd, channel_t *chan)
@@ -52,6 +54,7 @@ void nameshandler(client_t *client, int efd, channel_t *chan)
 	channel_client_t *tmp;
 	int start = 0;
 
+	printallchan(chan);
 	efd = efd;
 	chan = find_inchannel_list(chan , name);
 	if (chan == NULL) {

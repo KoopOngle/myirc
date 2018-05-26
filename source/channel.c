@@ -15,11 +15,20 @@
 channel_t *find_inchannel_list(channel_t *channel_list, char *name)
 {
 	channel_list = channel_list->head;
+
+	if (channel_list->name == NULL)
+		channel_list = channel_list->next;
 	if (strcmp(channel_list->name, name) == 0)
 		return (channel_list);
 	channel_list = channel_list->next;
-	while (channel_list != channel_list->head)
+	while (channel_list != channel_list->head && channel_list)
 	{
+		if (channel_list->name == NULL)
+		{
+			channel_list = channel_list->next;
+			continue;
+		}
+		printf("channel list name : %s\n", channel_list->name);
 		if (strcmp(channel_list->name, name) == 0)
 			return (channel_list);
 		channel_list = channel_list->next;
@@ -35,6 +44,7 @@ channel_t *initchannel()
 	channel_list->prev = channel_list;
 	channel_list->head = channel_list;
 	channel_list->name = NULL;
+	channel_list->clients = initcli_chan();
 	return (channel_list);
 }
 
@@ -71,11 +81,13 @@ channel_t *suppress_fromchannel_list(channel_t *channel_list)
 channel_t *add_tochannel_list(channel_t *channel_list, char *name)
 {
 	channel_t *newchannel;
+
 	if (channel_list == NULL)
 		return (NULL);
 	if (channel_list->name == NULL)
 	{
 		channel_list->name = strdup(name);
+		channel_list->clients = initcli_chan();
 		return (channel_list);
 	} else
 	{
@@ -92,4 +104,17 @@ channel_t *add_tochannel_list(channel_t *channel_list, char *name)
 		channel_list->next = newchannel;
 	}
 	return (newchannel);
+}
+
+void printallchan(channel_t *chan)
+{
+	channel_t *tmp = chan->head;
+	int start = 0;
+
+	while (tmp && (tmp != chan->head || start == 0))
+	{
+		start = 1;
+		printf("name : %s \n", tmp->name);
+		tmp = tmp->next;
+	}
 }

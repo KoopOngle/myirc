@@ -70,25 +70,30 @@ channel_client_t *suppress_fromcli_chan_list(channel_client_t *cli_chan_list)
 
 channel_client_t *add_tocli_chan_list(channel_client_t *cli_chan_list, client_t *client)
 {
-	channel_client_t *cli_chan;
-	if (cli_chan_list == NULL)
+	channel_client_t *newcli;
+
+	if (cli_chan_list == NULL) {
+		printf("cli_chan_list null\n");
 		return (NULL);
+	}
 	if (cli_chan_list->client == NULL)
 	{
+		printf("cli_chan_list->client null\n");
 		cli_chan_list->client = client;
 		return (cli_chan_list);
 	} else
 	{
-		cli_chan = malloc(sizeof(channel_client_t) * 1);
+		printf("cli_chan_list else\n");
+		newcli = malloc(sizeof(channel_client_t) * 1);
 		cli_chan_list = cli_chan_list->head->prev;
-		cli_chan->client = client;
-		cli_chan->prev = cli_chan_list;
-		cli_chan->head = cli_chan_list->head;
-		cli_chan->next = cli_chan->head;
+		newcli->client = client;
+		newcli->prev = cli_chan_list;
+		newcli->head = cli_chan_list->head;
+		newcli->next = newcli->head;
 		if (cli_chan_list->head->next == cli_chan_list->head)
-			cli_chan_list->head->next = cli_chan;
-		cli_chan_list->head->prev = cli_chan;
-		cli_chan_list->next = cli_chan;
+			cli_chan_list->head->next = newcli;
+		cli_chan_list->head->prev = newcli;
+		cli_chan_list->next = newcli;
 	}
-	return (cli_chan);
+	return (newcli);
 }

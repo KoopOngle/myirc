@@ -78,8 +78,14 @@ void accept_client(int efd, client_t *client, int fd, channel_t *chan)
 	} else {
 		printf("Accepted connection on descriptor %d\n", infd);
 		client = add_to_list(client, infd);
+		printallchan(chan);
+		printf("----------\n");
 		chan = find_inchannel_list(chan, "*");
+		printallchan(chan);
+		printf("----------\n");
 		chan->clients = add_tocli_chan_list(chan->clients, client);
+		printallchan(chan);
+		printf("----------\n");
 	}
 	ev.data.fd = infd;
 	ev.events = EPOLLIN;

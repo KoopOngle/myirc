@@ -35,6 +35,7 @@ typedef struct  s_channel
     char   *name;
 }               channel_t;
 
+void printallchan(channel_t *chan);
 channel_client_t *find_incli_chan_list(channel_client_t *cli_chan_list, client_t *client);
 channel_client_t *suppress_fromcli_chan_list(channel_client_t *cli_chan_list);
 channel_client_t *add_tocli_chan_list(channel_client_t *cli_chan_list, client_t *client);
