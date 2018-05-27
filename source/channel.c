@@ -28,7 +28,6 @@ channel_t *find_inchannel_list(channel_t *channel_list, char *name)
 			channel_list = channel_list->next;
 			continue;
 		}
-		printf("channel list name : %s\n", channel_list->name);
 		if (strcmp(channel_list->name, name) == 0)
 			return (channel_list);
 		channel_list = channel_list->next;

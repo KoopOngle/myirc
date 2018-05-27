@@ -73,17 +73,14 @@ channel_client_t *add_tocli_chan_list(channel_client_t *cli_chan_list, client_t 
 	channel_client_t *newcli;
 
 	if (cli_chan_list == NULL) {
-		printf("cli_chan_list null\n");
 		return (NULL);
 	}
 	if (cli_chan_list->client == NULL)
 	{
-		printf("cli_chan_list->client null\n");
 		cli_chan_list->client = client;
 		return (cli_chan_list);
 	} else
 	{
-		printf("cli_chan_list else\n");
 		newcli = malloc(sizeof(channel_client_t) * 1);
 		cli_chan_list = cli_chan_list->head->prev;
 		newcli->client = client;

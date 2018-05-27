@@ -23,7 +23,7 @@
 
 
 #define READ_SIZE 1
-#define NB_COM 10
+#define NB_COM 8
 #define MAXEVENTS 1024
 
 typedef struct handle_s {
@@ -57,8 +57,6 @@ static const handle_t handlers[NB_COM] = {
 	{"USERS", &usershandler, "\t<CRLF>\t\t\t\t: Disconnection"},
 	{"NAMES", &nameshandler, "\t<SP> <pathname> <CRLF>\t\t: Delete file on the server"},
 	{"PRIVMSG", &privmsghandler, "\t<CRLF>\t\t\t\t: Print working directory"},
-	{"SEND", NULL, "\t<CRLF>\t\t\t\t: Enable \"passive\" mode for data transfer"},
-	{"ACCEPT", NULL, "\t<SP> <host-port> <CRLF>\t\t: Enable \"active\" mode for data transfer"},
 	{"QUIT", &quithandler, "bru"}
 	};
 

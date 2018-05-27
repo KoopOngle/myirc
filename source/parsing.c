@@ -50,10 +50,17 @@ int read_client(client_t *client, int fd_event, int efd, channel_t *channel)
 	int i = 0;
 
 	if (cmd != NULL) {
+		printf("cmd = %s\n", cmd);
 		handle_command(cmd, find_in_list(client, fd_event), efd, channel);
 	}
 	else {
-		quithandler(find_in_list(client, fd_event), efd, channel);
+		printf("Closed connection on descriptor %d\n", fd_event);
+		epoll_ctl(efd, EPOLL_CTL_DEL, fd_event, NULL);
+		shutdown(fd_event, SHUT_RDWR);
+		close(fd_event);
+		client = find_in_list(client,fd_event);
+		suppress_client_from_chans(client, channel);
+		client = suppress_from_list(client);
 		return (1);
 	}
 	printf("Return :%d\n", i);
@@ -76,14 +83,8 @@ void accept_client(int efd, client_t *client, int fd, channel_t *chan)
 	} else {
 		printf("Accepted connection on descriptor %d\n", infd);
 		client = add_to_list(client, infd);
-		printallchan(chan);
-		printf("----------\n");
 		chan = find_inchannel_list(chan, "*");
-		printallchan(chan);
-		printf("----------\n");
 		chan->clients = add_tocli_chan_list(chan->clients, client);
-		printallchan(chan);
-		printf("----------\n");
 	}
 	ev.data.fd = infd;
 	ev.events = EPOLLIN;

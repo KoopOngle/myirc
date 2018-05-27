@@ -10,9 +10,13 @@
 
 void joinhandler(client_t *client, int efd, channel_t *chan)
 {
-	char *name = strdup(cleanstr(strtok(NULL, " ")));
+	char *name = strtok(NULL, " ");
 	channel_t *tmp = find_inchannel_list(chan, name);
 
+	if (name)
+		name = strdup(cleanstr(name));
+	else
+		return;
 	efd = efd;
 	printf("%s\n", name);
 	if (tmp == NULL) {
@@ -25,8 +29,12 @@ void joinhandler(client_t *client, int efd, channel_t *chan)
 
 void parthandler(client_t *client, int efd, channel_t *chan)
 {
-	char *name = strdup(cleanstr(strtok(NULL, " ")));
+	char *name = strtok(NULL, " ");
 
+	if (name)
+		name = strdup(cleanstr(name));
+	else
+		return;
 	efd = efd;
 	chan = find_inchannel_list(chan, name);
 	if (chan == NULL) {

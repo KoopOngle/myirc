@@ -5,35 +5,21 @@
 ** handlers.c
 */
 
-
-/*
-431 ERR_NONICKNAMEGIVEN
-":No nickname given"
-Renvoyé quand un paramètre pseudonyme attendu pour une commande n'est pas fourni.
-
-432 ERR_ERRONEUSNICKNAME
-"<pseudo> :Erroneus nickname"
-Renvoyé après la réception d'un message NICK qui contient des caractères qui ne font pas partie du jeu autorisé. Voir les sections 1 et 2.2 pour les détails des pseudonymes valides.
-
-433 ERR_NICKNAMEINUSE
-"<nick> :Nickname is already in use"
-Renvoyé quand le traitement d'un message NICK résulte en une tentative de changer de pseudonyme en un déjà existant.
-
-436 ERR_NICKCOLLISION
-"<nick> :Nickname collision KILL"
-*/
-
 #include "server.h"
 
 void nickhandler(client_t *client, int efd, channel_t *chan)
 {
 	client_t *tmp = client->head;
-	char *name = strdup(cleanstr(strtok(NULL, " ")));
+	char *name = strtok(NULL, " ");
 	int start = 1;
 	int test = 0;
 
 	chan = chan;
 	efd = efd;
+	if (name)
+		name = strdup(cleanstr(name));
+	else
+		return;
 	if (!name || name[0] == '\0')
 		write(client->fd, "431 No nickname given\r\n", 23);
 	while (tmp != client->head || start == 1) {
