@@ -11,7 +11,8 @@
 void joinhandler(client_t *client, int efd, channel_t *chan)
 {
 	char *name = strtok(NULL, " ");
-	channel_t *tmp = find_inchannel_list(chan, name);
+	char *tok;
+	channel_t *tmp;
 	channel_client_t *tmp2;
 
 	if (name)
@@ -19,39 +20,54 @@ void joinhandler(client_t *client, int efd, channel_t *chan)
 	else
 		return;
 	efd = efd;
-	if (tmp == NULL) {
-		chan = add_tochannel_list(chan, name);
-		chan = find_inchannel_list(chan, name);
-		chan->clients = add_tocli_chan_list(chan->clients, client);
-	} else {
-		tmp2 = find_incli_chan_list(tmp->clients, client);
-		if (tmp2 == NULL)
-			chan->clients = add_tocli_chan_list(tmp->clients, client);
-		else
-			write(client->fd, "443 Already in the channel\r\n", 28);
+	tok = strtok(name, ",");
+	while (tok != NULL) {
+		tmp = find_inchannel_list(chan, tok);
+		if (tmp == NULL) {
+			chan = add_tochannel_list(chan, tok);
+			chan = find_inchannel_list(chan, tok);
+			chan->clients = add_tocli_chan_list(chan->clients, client);
+		} else {
+			tmp2 = find_incli_chan_list(tmp->clients, client);
+			if (tmp2 == NULL)
+				chan->clients = add_tocli_chan_list(tmp->clients, client);
+			else
+				write(client->fd, "443 Already in the channel\r\n", 28);
+		}
+		tok = strtok(NULL, ",");
 	}
 }
 
 void parthandler(client_t *client, int efd, channel_t *chan)
 {
 	char *name = strtok(NULL, " ");
+	char *tok;
+	channel_t *tmp = chan;
 
 	if (name)
 		name = strdup(cleanstr(name));
 	else
 		return;
 	efd = efd;
-	chan = find_inchannel_list(chan, name);
-	if (chan == NULL) {
-		write(client->fd, "403 Channel isn't a good chan\r\n", 31);
-		return;
+	tok = strtok(name, ",");
+	while (tok != NULL) {
+		tmp = find_inchannel_list(chan, tok);
+		if (tmp == NULL) {
+			write(client->fd, tok, strlen(tok));
+			write(client->fd, ": Channel isn't a good chan 403\r\n", 33);
+			tok = strtok(NULL, ",");
+			continue;
+		}
+		if (find_incli_chan_list(tmp->clients,client) == NULL)
+		{
+			write(client->fd, tok, strlen(tok));
+			write(client->fd, ": You're not on that channel 442\r\n", 34);
+			tok = strtok(NULL, ",");
+			continue;
+		}
+		tmp->clients = suppress_fromcli_chan_list(find_incli_chan_list(chan->clients, client));
+		tok = strtok(NULL, ",");
 	}
-	if (find_incli_chan_list(chan->clients,client) == NULL)
-	{
-		write(client->fd, "442 You're not on that channel\r\n", 32);
-		return;
-	}
-	chan->clients = suppress_fromcli_chan_list(find_incli_chan_list(chan->clients, client));
 }
 
 void suppress_client_from_chans(client_t *client, channel_t *chan)

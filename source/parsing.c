@@ -47,10 +47,8 @@ void handle_command(char *str, client_t *client, int efd, channel_t *channel)
 int read_client(client_t *client, int fd_event, int efd, channel_t *channel)
 {
 	char *cmd = get_next_line(fd_event);
-	int i = 0;
 
 	if (cmd != NULL) {
-		printf("cmd = %s\n", cmd);
 		handle_command(cmd, find_in_list(client, fd_event), efd, channel);
 	}
 	else {
@@ -63,7 +61,6 @@ int read_client(client_t *client, int fd_event, int efd, channel_t *channel)
 		client = suppress_from_list(client);
 		return (1);
 	}
-	printf("Return :%d\n", i);
 
 	return(0);
 }

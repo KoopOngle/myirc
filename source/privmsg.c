@@ -88,7 +88,6 @@ void privmsghandler(client_t *client, int efd, channel_t *chan)
 		return;
 	name = strtok(chans_name, ",");
 	while (name != NULL) {
-		printf("%s\n", name);
 		if (search_and_write_in_chan(client, chan, name , to_send) == 0)
 			search_and_write_in_client(client, name, to_send);
 		name = strtok(NULL, ",");

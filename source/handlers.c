@@ -42,9 +42,6 @@ void nickhandler(client_t *client, int efd, channel_t *chan)
 
 		if (client->user != 0)
 			write(client->fd, "001 Welcome\r\n", 13);
-		//write(client->fd, "Bonjour ", 8);
-		//write(client->fd, name, strlen(name));
-		//write(client->fd, " 001\r\n", 6);
 	}
 	printf("NICK handled %d\n", client->fd);
 }
