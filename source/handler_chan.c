@@ -12,19 +12,24 @@ void joinhandler(client_t *client, int efd, channel_t *chan)
 {
 	char *name = strtok(NULL, " ");
 	channel_t *tmp = find_inchannel_list(chan, name);
+	channel_client_t *tmp2;
 
 	if (name)
 		name = strdup(cleanstr(name));
 	else
 		return;
 	efd = efd;
-	printf("%s\n", name);
 	if (tmp == NULL) {
 		chan = add_tochannel_list(chan, name);
 		chan = find_inchannel_list(chan, name);
 		chan->clients = add_tocli_chan_list(chan->clients, client);
-	} else
-		chan->clients = add_tocli_chan_list(tmp->clients, client);
+	} else {
+		tmp2 = find_incli_chan_list(tmp->clients, client);
+		if (tmp2 == NULL)
+			chan->clients = add_tocli_chan_list(tmp->clients, client);
+		else
+			write(client->fd, "443 Already in the channel\r\n", 28);
+	}
 }
 
 void parthandler(client_t *client, int efd, channel_t *chan)
@@ -38,12 +43,12 @@ void parthandler(client_t *client, int efd, channel_t *chan)
 	efd = efd;
 	chan = find_inchannel_list(chan, name);
 	if (chan == NULL) {
-		write(client->fd, "Channel isn't a good chan\r\n", 27);
+		write(client->fd, "403 Channel isn't a good chan\r\n", 31);
 		return;
 	}
 	if (find_incli_chan_list(chan->clients,client) == NULL)
 	{
-		write(client->fd, "isn't in this channel chan\r\n", 28);
+		write(client->fd, "442 You're not on that channel\r\n", 32);
 		return;
 	}
 	chan->clients = suppress_fromcli_chan_list(find_incli_chan_list(chan->clients, client));

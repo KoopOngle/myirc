@@ -67,6 +67,12 @@ client_t *suppress_from_list(client_t *fd_list)
         return (newfd);
 }
 
+char *create_nick(int fd) {
+        char *nick = malloc(100);
+        sprintf(nick, "Guest%d", fd);
+        return nick;
+}
+
 client_t *add_to_list(client_t *fd_list, int fd)
 {
         client_t *newfd;
@@ -75,6 +81,7 @@ client_t *add_to_list(client_t *fd_list, int fd)
         if (fd_list->fd == -1)
         {
                 fd_list->fd = fd;
+                fd_list->nick = create_nick(fd);
                 return (fd_list);
         } else
         {
@@ -85,7 +92,7 @@ client_t *add_to_list(client_t *fd_list, int fd)
                 newfd->head = fd_list->head;
                 newfd->next = newfd->head;
                 newfd->user = 0;
-                newfd->nick = NULL;
+                newfd->nick = create_nick(fd);
                 if (fd_list->head->next == fd_list->head)
                         fd_list->head->next = newfd;
                 fd_list->head->prev = newfd;
