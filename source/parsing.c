@@ -53,9 +53,7 @@ int read_client(client_t *client, int fd_event, int efd, channel_t *channel)
 		handle_command(cmd, find_in_list(client, fd_event), efd, channel);
 	}
 	else {
-		printf("Closed connection on descriptor %d\n", fd_event);
-		client = suppress_from_list(find_in_list(client, fd_event));
-		close(fd_event);
+		quithandler(find_in_list(client, fd_event), efd, channel);
 		return (1);
 	}
 	printf("Return :%d\n", i);

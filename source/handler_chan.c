@@ -23,13 +23,6 @@ void joinhandler(client_t *client, int efd, channel_t *chan)
 		chan->clients = add_tocli_chan_list(tmp->clients, client);
 }
 
-void privmsghandler(client_t *client, int efd, channel_t *chan)
-{
-	client = client;
-	efd = efd;
-	chan = chan;
-}
-
 void parthandler(client_t *client, int efd, channel_t *chan)
 {
 	char *name = strdup(cleanstr(strtok(NULL, " ")));
@@ -46,31 +39,6 @@ void parthandler(client_t *client, int efd, channel_t *chan)
 		return;
 	}
 	chan->clients = suppress_fromcli_chan_list(find_incli_chan_list(chan->clients, client));
-}
-
-void nameshandler(client_t *client, int efd, channel_t *chan)
-{
-	char *name = strdup(cleanstr(strtok(NULL, " ")));
-	channel_client_t *tmp;
-	int start = 0;
-
-	printallchan(chan);
-	efd = efd;
-	chan = find_inchannel_list(chan , name);
-	if (chan == NULL) {
-		printf("bug\n");
-		return;
-	}
-	tmp = chan->clients->head;
-	write(client->fd, "Name of people in chan : ", 25);
-	write(client->fd, name, strlen(name));
-	write(client->fd, "\n", 1);
-	while(tmp != chan->clients->head || start == 0) {
-		start = 1;
-		write(client->fd, tmp->client->nick, strlen(tmp->client->nick));
-		write(client->fd, "\n", 1);
-		tmp = tmp->next;
-	}
 }
 
 void suppress_client_from_chans(client_t *client, channel_t *chan)

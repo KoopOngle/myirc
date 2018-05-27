@@ -42,6 +42,7 @@ void userhandler(client_t *client, int efd, channel_t *chan);
 void quithandler(client_t *client, int efd, channel_t *chan);
 void passhandler(client_t *client, int efd, channel_t *chan);
 void nickhandler(client_t *client, int efd, channel_t *chan);
+void privmsghandler(client_t *client, int efd, channel_t *chan);
 void suppress_client_from_chans(client_t *client, channel_t *chan);
 void nameshandler(client_t *client, int efd, channel_t *chan);
 void parthandler(client_t *client, int efd, channel_t *chan);
@@ -55,7 +56,7 @@ static const handle_t handlers[NB_COM] = {
 	{"PART", &parthandler, "\t<CRLF>\t\t\t\t: Change working directory to parent directory"},
 	{"USERS", &usershandler, "\t<CRLF>\t\t\t\t: Disconnection"},
 	{"NAMES", &nameshandler, "\t<SP> <pathname> <CRLF>\t\t: Delete file on the server"},
-	{"PRV", NULL, "\t<CRLF>\t\t\t\t: Print working directory"},
+	{"PRIVMSG", &privmsghandler, "\t<CRLF>\t\t\t\t: Print working directory"},
 	{"SEND", NULL, "\t<CRLF>\t\t\t\t: Enable \"passive\" mode for data transfer"},
 	{"ACCEPT", NULL, "\t<SP> <host-port> <CRLF>\t\t: Enable \"active\" mode for data transfer"},
 	{"QUIT", &quithandler, "bru"}
